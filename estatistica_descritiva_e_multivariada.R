@@ -8,64 +8,20 @@
 
 ## 1.1 Pacotes utilizados
 
-pacman::p_load(tidyverse, ggthemes, stats, patchwork, kableExtra, ggstatsplot, sjPlot)
+pacman::p_load(tidyverse, ggthemes,
+               stats, patchwork, 
+               kableExtra, sjPlot, 
+               caret, performance, 
+               rstatix, MetBrewer)
+
+library(ggstatsplot) # pacote pode não abrir com pacman e reinstalar involutariamente
 
 ## 1.2 Bases
 
-#OBS: MUDAR OS CAMINHOS !!!!
 
-load ("~/pandemia_reeleicao_2020/banco_pandemia_reeleicao.Rda")
-load("~/petro_rendas/trabalhos/covid_reeleicao_2020/banco_de_dados/bancos_base/maquina_publica/bcovid_despesas_funcionalismo.Rda")
-load( "~/petro_rendas/trabalhos/covid_reeleicao_2020/resultados/banco_prara_rodar_rmd/banco_bcovid_var_novas.Rda")
+load ("banco_pandemia_reeleicao.Rda") 
 load("grafico_reeleicao.Rda")
 
-banco_pandemia_reeleicao <- banco_bcovid_var_novas %>% 
-  select ( sigla_uf,
-           sit_20_sem_suplementar,
-    `Reeleito 2020`,
-`Log da população (2019)`,
-  Nordeste ,
-  Sudeste ,  
-  Sul ,
-  Norte , 
-  `Gini (2010)` , 
-  `PIB per capita (2017)` , 
-  Metropole , 
-  `Município polo em saúde` ,
-  `Densidade demográfica` ,
-  `Dependência financeira (2019)` ,
-    NEP ,
-  `Diferença entre Haddad e Bolsonaro` , 
-  `Diferença entre o primeiro e segundo colocado (2016)` ,
-  `% candidato mais votado (2016)` ,
-  PT ,  
-  PSDB , 
-  PP ,
-  PSD ,
-  PSB ,
-  PMDB ,
-  PR ,
-  DEM ,
-  `Prefeita` ,
-  `Médico(a)` ,
-  `Casado(a)` ,
-  `Ensino Superior` , 
-  `% despesa por candidato` ,
-  `% de funcionários discricionários` ,
-  `Funcionários per capita` ,
-  `Despesas totais com saúde per capita (2020)` ,
-  `Δ% em saúde per capita (2019-2020)` ,
-  `Δ% de médicos (2016-2020)` ,
-  `Δ% auxiliar de enfermagem (2016-2020)` ,
-  `IDEB (2019)` ,
-  `Δ% IDEB (2017-2019)` ,
-  `Δ% educação fundamental infantil per capita (2016-2020)` ,
-  `Despesas com educação infantil per capita (2020)` ,
-  `Proporção de beneficiários` ,
-  `Valor recebido de auxílio per capita` ,
-  `Média restrição em locais de trabalho` ,
-  `Nº óbitos até outubro/10 mil hab.` ,
-  `Nº casos até outubro/10 mil hab.`)
 
 ## 1.3 Set theme
 
@@ -111,21 +67,20 @@ graf_1 <- grafico_reeleicao %>%
 ggsave(graf_1, 
        filename = "graf_1.png", 
        width = 16, 
-       height = 10,
-       path = "~/petro_rendas/trabalhos/covid_reeleicao_2020/resultados/")
+       height = 10)
 
 
 ## 2.2 Grafico Relacoes bivariadas entre o enfrentamento e a situacao politica dos prefeitos em 2020
 
 
-a <-  banco_bcovid_var_novas %>% 
+a <- banco_pandemia_reeleicao %>% 
   filter(`Δ% de médicos (2016-2020)`<= 750) %>% 
   ggbetweenstats(x = sit_desc_sem_suplementar,
                  y = `Δ% de médicos (2016-2020)`,
                  ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
                  centrality.label.args = list(size = 3.5))+
   scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-  MetBrewer::scale_color_met_d(name = "Degas")+
+#  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
@@ -133,7 +88,7 @@ a <-  banco_bcovid_var_novas %>%
         plot.subtitle = element_text(size = 14))
 
 
-b <- banco_bcovid_var_novas %>%
+b <- banco_pandemia_reeleicao %>%
   filter( `Despesas totais com saúde per capita (2020)` <= 4000) %>% 
   ggbetweenstats(
     x = sit_desc_sem_suplementar,
@@ -141,7 +96,7 @@ b <- banco_bcovid_var_novas %>%
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
   scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-  MetBrewer::scale_color_met_d(name = "Degas")+
+#  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
@@ -149,55 +104,55 @@ b <- banco_bcovid_var_novas %>%
         plot.subtitle = element_text(size = 14))
 
 c <- ggbetweenstats(
-  data = banco_bcovid_var_novas,
+  data = banco_pandemia_reeleicao,
   x = sit_desc_sem_suplementar,
   y =  `Nº óbitos até outubro/10 mil hab.`,
   ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
   centrality.label.args = list(size = 3.5)) + 
   scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-  MetBrewer::scale_color_met_d(name = "Degas")+
+#  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
 
-d <- banco_bcovid_var_novas %>%
+d <- banco_pandemia_reeleicao %>%
   ggbetweenstats(
     x = sit_desc_sem_suplementar,
     y =   `Valor recebido de auxílio per capita`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
   scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-  MetBrewer::scale_color_met_d(name = "Degas")+
+  #MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
 
-g <-  banco_bcovid_var_novas %>%
+g <-  banco_pandemia_reeleicao %>%
   ggbetweenstats(
     x = sit_desc_sem_suplementar,
     y =    `Média restrição em locais de trabalho`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
   scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-  MetBrewer::scale_color_met_d(name = "Degas")+
+ # MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
 
-h <-  banco_bcovid_var_novas %>%
+h <-  banco_pandemia_reeleicao %>%
   filter( `Δ% auxiliar de enfermagem (2016-2020)` <= 500) %>% 
   ggbetweenstats(
     x = sit_desc_sem_suplementar,
     y =    `Δ% auxiliar de enfermagem (2016-2020)`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
-  MetBrewer::scale_color_met_d(name = "Degas")+
+  #MetBrewer::scale_color_met_d(name = "Degas")+
   scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
@@ -209,63 +164,16 @@ h <-  banco_bcovid_var_novas %>%
 
 figura_artigo <- (a + h)/(b + d)/(c + g)
 
-ggsave(figura_artigo, width = 15, height = 22, filename = "figura_aritgo_dados.png")
+ggsave(figura_artigo, width = 15, height = 22, filename = "figura_artigo_dados.png")
 
 # 3.0 Analises multivariadas ----
 
 ## 3.1 Organizacao dos modelos
 
-######### Renomear as variáveis que vão entrar no modelo sem sobreescrever o banco ####
+### Modelos logisticos ----
 
-banco_bcovid_var_novas <- bcovid_despesas_funcionalismo %>% 
-  rename(`Reeleito 2020` = reeleito_20_dummy_sem_suplementar,
-         `Log da população (2019)` = log_pop_2019, 
-         Nordeste = nordeste, 
-         Sudeste = sudeste, 
-         Sul = sul,
-         Norte = norte, 
-         `Gini (2010)` = gini_2010, 
-         `PIB per capita (2017)` = pib_per_2017, 
-         Metropole = metropole, 
-         `Município polo em saúde` = mun_polo,
-         `Densidade demográfica` = densidade,
-         `Dependência financeira (2019)` = pp_trans_2019,
-         NEP = nep, 
-         `Diferença entre Haddad e Bolsonaro`  = diferenca_bozo_haddad, 
-         `Diferença entre o primeiro e segundo colocado (2016)` = dif_1_2_colocado_2016,
-         `% candidato mais votado (2016)` = perc_cand_mais_votado_2016,
-         PT = pt,  
-         PSDB = psdb, 
-         PP = pp,
-         PSD = psd,
-         PSB = psb,
-         PMDB = pmdb,
-         PR = pr,
-         DEM = dem,
-         `Prefeita` = mulher,
-         `Médico(a)` = medico,
-         `Casado(a)` = casado,
-         #  Branco(a) = branco, # não tem no banco
-         `Ensino Superior` = ens_superior, 
-         `% despesa por candidato` =  perc_despesa_candidato,
-         `% de funcionários discricionários` = perc_func_discricionarios,
-         `Funcionários per capita` = func_percapita,
-         `Despesas totais com saúde per capita (2020)` =  desp_total_saude_per_capita_defla_2020,
-         `Δ% em saúde per capita (2019-2020)` = variacao_perc_saude_per_capita_2019_2020,
-         `Δ% de médicos (2016-2020)` = vari_medico_2016_2020,
-         `Δ% auxiliar de enfermagem (2016-2020)` = vari_tec_aux_enfermagem_2016_2020,
-         `IDEB (2019)` = ideb_2019,
-         `Δ% IDEB (2017-2019)` = variacao_perc_ideb_2017_2019,
-         `Δ% educação fundamental infantil per capita (2016-2020)` = variacao_perc_edu_fundamental_infantil_per_capita_2016_2020,
-         `Despesas com educação infantil per capita (2020)` = despesas_edu_fundamental_infantil_per_capita_defla_2020,
-         `Proporção de beneficiários` = beneficiados_per_capita,
-         `Valor recebido de auxílio per capita` = aux_per_capita,
-         `Média restrição em locais de trabalho` = md_local_trabalho,
-         `Nº óbitos até outubro/10 mil hab.` =  obitos_acum_out_10hab,
-         `Nº casos até outubro/10 mil hab.` = casos_acum_out_10hab) %>% 
-  mutate(`Reeleito 2020` = as_factor(as.numeric(`Reeleito 2020`)))
 
-## Modelos logisticos 
+###### Modelo 1 ----
 
 modelo_1 <- glm(`Reeleito 2020` ~ 
               
@@ -327,24 +235,26 @@ modelo_1 <- glm(`Reeleito 2020` ~
                   `Nº óbitos até outubro/10 mil hab.` +
                   `Nº casos até outubro/10 mil hab.`, 
                 
-                family = binomial(link = "logit"), data = banco_bcovid_var_novas)
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
-banco_bcovid_var_novas$pred_modelo_1 <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_1 <- as.factor(
   ifelse(
     predict(modelo_1, 
-            newdata = banco_bcovid_var_novas, 
+            newdata = banco_pandemia_reeleicao, 
             type = "response")
     >0.5,"1","0"))
 
 
-matriz_modelo_1 <- caret:: confusionMatrix(banco_bcovid_var_novas$pred_modelo_1, banco_bcovid_var_novas$`Modelo 1`, positive = "1")
+matriz_modelo_1 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_1, banco_pandemia_reeleicao$`Reeleito 2020`, positive = "1")
+
+check_model(modelo_1) 
+check_collinearity(modelo_1)
+
+# Obs: modelo 1 possui alto grau de colinearidade
 
 
-#check_model(modelo_1)
-
-
-#########
+######### Modelo 2 ----
 
 modelo_2 <- glm(`Reeleito 2020` ~ 
                   
@@ -395,26 +305,30 @@ modelo_2 <- glm(`Reeleito 2020` ~
                   `Nº óbitos até outubro/10 mil hab.` +
                   `Nº casos até outubro/10 mil hab.`, 
                 
-                family = binomial(link = "logit"), data = banco_bcovid_var_novas)
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
 
 #tab_model(modelo_2)
 
-banco_bcovid_var_novas$pred_modelo_2 <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_2 <- as.factor(
   ifelse(
     predict(modelo_2, 
-            newdata = banco_bcovid_var_novas, 
+            newdata = banco_pandemia_reeleicao, 
             type = "response")
     >0.5,"1","0"))
 
 
-matriz_modelo_2 <- caret:: confusionMatrix(banco_bcovid_var_novas$pred_modelo_2, banco_bcovid_var_novas$`Modelo 2`, positive = "1")
+matriz_modelo_2 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_2,
+                                           banco_pandemia_reeleicao$`Reeleito 2020`,
+                                           positive = "1")
 
-#check_model(modelo_2)
-#check_collinearity(modelo_2)
+check_model(modelo_2)
+check_collinearity(modelo_2)
+# Obs: Tambem alto grau de colinearidade 
 
-############################
+
+######### Modelo 3 ----
 
 modelo_3 <- glm(`Reeleito 2020` ~ 
                   
@@ -462,25 +376,29 @@ modelo_3 <- glm(`Reeleito 2020` ~
                   `Nº óbitos até outubro/10 mil hab.` +
                   `Nº casos até outubro/10 mil hab.`, 
                 
-                family = binomial(link = "logit"), data = banco_bcovid_var_novas)
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
-#tab_model(modelo_3)
+tab_model(modelo_3)
 
 
-banco_bcovid_var_novas$pred_modelo_3 <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_3 <- as.factor(
   ifelse(
     predict(modelo_3, 
-            newdata = banco_bcovid_var_novas, 
+            newdata = banco_pandemia_reeleicao, 
             type = "response")
     >0.5,"1","0"))
 
 
-matriz_modelo_3 <- caret:: confusionMatrix(banco_bcovid_var_novas$pred_modelo_3, banco_bcovid_var_novas$`Modelo 3`, positive = "1")
+matriz_modelo_3 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_3,
+                                           banco_pandemia_reeleicao$`Reeleito 2020`,
+                                           positive = "1")
 
-#check_model(modelo_3)
-#check_collinearity(modelo_3)
+check_model(modelo_3)
+check_collinearity(modelo_3)
 
-##########################
+
+
+ ########## Modelo 4 ----
 
 modelo_4 <- glm(`Reeleito 2020` ~ 
                   
@@ -519,7 +437,7 @@ modelo_4 <- glm(`Reeleito 2020` ~
                   `Valor recebido de auxílio per capita` +
                   `Nº óbitos até outubro/10 mil hab.` ,
                 
-                family = binomial(link = "logit"), data = banco_bcovid_var_novas)
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 tab_model(modelo_4)
 
@@ -528,21 +446,24 @@ tab_model(modelo_4)
 
 checkmodel_modelo4_dados <- check_model(modelo_4)
 
-banco_bcovid_var_novas$pred_modelo_4 <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_4 <- as.factor(
   ifelse(
     predict(modelo_4, 
-            newdata = banco_bcovid_var_novas, 
+            newdata = banco_pandemia_reeleicao, 
             type = "response")
     >0.5,"1","0"))
 
 
-matriz_modelo_4 <- caret:: confusionMatrix(banco_bcovid_var_novas$pred_modelo_4, banco_bcovid_var_novas$`Modelo 4`, positive = "1")
+matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4, 
+                                           banco_pandemia_reeleicao$`Reeleito 2020`,
+                                           positive = "1")
 
 check_model(modelo_4)
 check_collinearity(modelo_4)
 
-
-plot_1 <-  sjPlot::plot_model(modelo_4, type = "pred", terms = c("NEP", "Prefeita"), colors =c("#999999", "#0088cc"))+
+##### Graficos de probabilidades preditas pelo modelo 4 ----
+plot_1 <-  sjPlot::plot_model(modelo_4, type = "pred", terms = c("NEP", "Prefeita"), 
+                              colors =c("#999999", "#0088cc"))+
   labs(title = "NEP e Prefeita", 
        y = "", 
        col = "", x = "")+
@@ -578,9 +499,10 @@ library(patchwork)
 prob_preditas_artio_dados <- (plot_1 + plot_2)/(plot_3 + plot_4 )
 
 ggsave(prob_preditas_artio_dados, width = 17, height = 18, 
-       filename = "~/petro_rendas/trabalhos/covid_reeleicao_2020/resultados/prob_preditas_artigo_dados.png")
+       filename = "prob_preditas_artigo_dados.png")
 
-########
+########## Modelo  5 ----
+
 
 modelo_5 <- glm(`Reeleito 2020` ~ 
                   
@@ -612,7 +534,7 @@ modelo_5 <- glm(`Reeleito 2020` ~
                   
                   `Nº óbitos até outubro/10 mil hab.` ,
                 
-                family = binomial(link = "logit"), data = banco_bcovid_var_novas)
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
 tab_model(modelo_5)
@@ -625,35 +547,35 @@ check_collinearity(modelo_5)
 ggsave(checkmodel_modelo5_dados, height = 14, width = 14, 
        filename = "~/petro_rendas/trabalhos/covid_reeleicao_2020/resultados/checkmodel_modelo5_dados.png")
 
-banco_bcovid_var_novas$pred_modelo_5 <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_5 <- as.factor(
   ifelse(
     predict(modelo_5, 
-            newdata = banco_bcovid_var_novas, 
+            newdata = banco_pandemia_reeleicao, 
             type = "response")
     >0.5,"1","0"))
 
 
-matriz_modelo_5 <- caret:: confusionMatrix(banco_bcovid_var_novas$pred_modelo_5, banco_bcovid_var_novas$`Modelo 5`, positive = "1")
-
-##########
-
-banco_bcovid_var_novas$sit_desc_anulado
-glimpse(banco_bcovid_var_novas)
-glimpse(banco_pandemia_reeleicao
-
-        table(banco_bcovid_var_novas$sit_20_sem_suplementar,banco_bcovid_var_novas$sit_desc_anulado)
-        table(
-        
-banco_bcovid_var_novas <- banco_bcovid_var_novas %>% 
-  mutate(tentativa =  case_when(sit_desc_anulado %in% c("N<e3>o Reeleito", "Reeleito")  ~ "1",
-                                sit_desc_anulado == "N<e3>o tentou" ~ "0",
-                                sit_desc_anulado %in% c("Anulada", "Impedido") ~ "NA"),
-         tentativa_reeleicao = as_factor(ifelse(tentativa == 1, 1,
-                                                ifelse(tentativa == 0, 0, NA)))) %>% 
-  
-  filter(!is.na(tentativa_reeleicao)) ##### ATENCAO PARA ESTE FILTRO RETIRA CASOS 
+matriz_modelo_5 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_5,
+                                           banco_pandemia_reeleicao$`Reeleito 2020`, positive = "1")
 
 
+
+###### Cria variável desistencia ----
+
+
+banco_pandemia_reeleicao <- banco_pandemia_reeleicao %>% 
+mutate(tentativa =  case_when(sit_desc_sem_suplementar %in% c("N<e3>o Reeleito", "Reeleito")  ~ "1",
+                              sit_desc_sem_suplementar == "N<e3>o tentou" ~ "0",
+                              sit_desc_sem_suplementar %in% c("Anulada", "Impedido") ~ "NA"),
+       tentativa_reeleicao = as_factor(ifelse(tentativa == 1, 1,
+                                              ifelse(tentativa == 0, 0, NA))))
+
+
+
+
+#  filter(!is.na(tentativa_reeleicao)) ##### ATENCAO PARA ESTE FILTRO RETIRA CASOS 
+
+########## Modelo X: teste de vies de selecao para desistencias de reeleicao ----
 
 modelo_x <- glm(tentativa_reeleicao ~
                   
@@ -714,7 +636,7 @@ modelo_x <- glm(tentativa_reeleicao ~
                 #    `Média restrição em locais de trabalho` +
                 `Nº óbitos até outubro/10 mil hab.`,
                 #   `Nº casos até outubro/10 mil hab.`,
-                family = binomial(link = "logit"), data = banco_bcovid_var_novas
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao
 )
 
 sjPlot::tab_model(modelo_x)
@@ -722,10 +644,10 @@ sjPlot::tab_model(modelo_x)
 sjPlot::plot_model(modelo_x)
 
 
-banco_bcovid_var_novas$pred_modelo_x <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_x <- as.factor(
   ifelse(
     predict(modelo_x,
-            newdata = banco_bcovid_var_novas,
+            newdata = banco_pandemia_reeleicao,
             type = "response"
     )
     > 0.5, "1", "0"
@@ -734,20 +656,116 @@ banco_bcovid_var_novas$pred_modelo_x <- as.factor(
 
 
 
-matriz_modelo_x <- caret:: confusionMatrix(banco_bcovid_var_novas$pred_modelo_x, banco_bcovid_var_novas$tentativa_reeleicao, positive = "1")
+matriz_modelo_x <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_x,
+                                           banco_pandemia_reeleicao$tentativa_reeleicao, positive = "1")
 
 
-#############################
+####### Modelos logisticos hierarquicos ----
 
-## Testes individuais dos modelos
 
-rstatix:: get_summary_stats(banco_bcovid_var_novas$`% despesa por candidato`)
+######## Modelo 6 ----
+library(lme4)
+
+modelo_6 <- glmer(`Reeleito 2020` ~ 
+                    
+                    # Sociodemograficas
+                    
+                    `Log da população (2019)`+
+                    #Nordeste +
+                    #Sudeste +
+                    #Sul +
+                    #Norte + 
+                    `PIB per capita (2017)` + 
+                    
+                    ## Políticas 
+                    
+                    NEP +
+                    `Diferença entre Haddad e Bolsonaro` + 
+                    #  `Diferença entre o primeiro e segundo colocado (2016)` +
+                    `% candidato mais votado (2016)` +
+                    
+                    ## Individuais 
+                    
+                    `Prefeita` +
+                    
+                    # Governo 
+                    
+                    `Despesas totais com saúde per capita (2020)` +
+                    
+                    (1|sigla_uf), 
+                  
+                  
+                  # Conjunturais da Pandemia
+                  
+                  # `Nº óbitos até outubro/10 mil hab.` ,
+                  
+                  family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
+
+
+#tab_model(modelo_6, p.adjust = "bonferroni")
+
+check_model(modelo_6)
+#heck_collinearity(modelo_6)
+
+plot_model(modelo_6, show.values = TRUE)
+
+####### Modelo 7 ----
+modelo_7 <- glmer(`Reeleito 2020` ~ 
+                    
+                    # Sociodemograficas
+                    
+                    `Log da população (2019)`+
+                    #Nordeste +
+                    #Sudeste +
+                    #Sul +
+                    #Norte + 
+                    `PIB per capita (2017)` + 
+                    
+                    ## Políticas 
+                    
+                    NEP +
+                    `Diferença entre Haddad e Bolsonaro` + 
+                    #  `Diferença entre o primeiro e segundo colocado (2016)` +
+                    `% candidato mais votado (2016)` +
+                    
+                    ## Individuais 
+                    
+                    `Prefeita` +
+                    
+                    # Governo 
+                    
+                    `Despesas totais com saúde per capita (2020)` +
+                    
+                    
+                    
+                    
+                    # Conjunturais da Pandemia
+                    
+                    `Nº óbitos até outubro/10 mil hab.` 
+                  
+                  +
+                    (1|sigla_uf),
+                  
+                  family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
+
+
+## Os dois modelos hierarquicos que foram para o anexo do artigo por não trazerem ganhos substantivos
+
+tab_model(modelo_6, modelo_7)
+
+plot_models(modelo_6, modelo_7, show.values = TRUE) 
+
+
+
+########## Testes individuais dos modelos -----
+
+banco_pandemia_reeleicao %>% 
+  get_summary_stats(despesa_campanha) %>% 
+  kbl()
 
 check_model(modelo_1)
 
 check_collinearity(modelo_1)
-
-check_model(modelo_5)
 
 check_model(modelo_2)
 check_collinearity(modelo_2)
