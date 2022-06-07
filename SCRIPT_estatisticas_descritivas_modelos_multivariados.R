@@ -22,7 +22,6 @@ library(ggstatsplot) # pacote pode não abrir com pacman e reinstalar involutari
 load ("banco_pandemia_reeleicao.Rda") 
 load("grafico_reeleicao.Rda")
 
-
 ## 1.3 Set theme
 
 tema <- theme_fivethirtyeight() +
