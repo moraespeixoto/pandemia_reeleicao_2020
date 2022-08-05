@@ -22,6 +22,12 @@ library(ggstatsplot) # pacote pode não abrir com pacman e reinstalar involutari
 load ("banco_pandemia_reeleicao.Rda") 
 load("grafico_reeleicao.Rda")
 
+### Renomear variável de gastos de campaha
+
+banco_pandemia_reeleicao <- banco_pandemia_reeleicao %>% 
+  rename(`% despesa do candidato` = `% despesa por candidato`)
+
+
 ## 1.3 Set theme
 
 tema <- theme_fivethirtyeight() +
@@ -211,7 +217,7 @@ modelo_1 <- glm(`Reeleito 2020` ~
                   `Médico(a)` +
                   `Casado(a)` +
                   `Ensino Superior` + 
-                  `% despesa por candidato` +
+                  `% despesa do candidato` +
                   
                   # Governo 
                   
@@ -286,7 +292,7 @@ modelo_2 <- glm(`Reeleito 2020` ~
                   PR +
                   DEM +
                   `Prefeita` +
-                  `% despesa por candidato` +
+                  `% despesa do candidato` +
                   
                   # Governo 
                   
@@ -360,7 +366,7 @@ modelo_3 <- glm(`Reeleito 2020` ~
                   PR +
                   DEM +
                   `Prefeita` +
-                  `% despesa por candidato` +
+                  `% despesa do candidato` +
                   
                   # Governo 
                   
@@ -425,7 +431,7 @@ modelo_4 <- glm(`Reeleito 2020` ~
                   PR +
                   DEM +
                   `Prefeita` +
-                  `% despesa por candidato` +
+                  `% despesa do candidato` +
                   
                   # Governo 
                   
@@ -478,7 +484,7 @@ plot_2 <- sjPlot::plot_model(modelo_4, type = "pred", terms = c("Log da populaç
   scale_fill_manual(values = c("gray60", "#994614"))
 
 
-plot_3 <- sjPlot::plot_model(modelo_4, type = "pred", terms = c("% despesa por candidato", "Prefeita"), colors =c("#0088cc", "#999999")) +
+plot_3 <- sjPlot::plot_model(modelo_4, type = "pred", terms = c("% despesa do candidato", "Prefeita"), colors =c("#0088cc", "#999999")) +
   labs(title = "% Despesa de campanha e Prefeita",
        y = "",
        col = "", x = "")+
@@ -540,6 +546,57 @@ tab_model(modelo_5)
 check_collinearity(modelo_5)
 
 
+##
+
+modelo_4.1 <- glm(`Reeleito 2020` ~ 
+                  
+                  # Sociodemograficas
+                  
+                  `Log da população (2019)`+
+                  #Nordeste +
+                  #Sudeste +
+                  #Sul +
+                  #Norte + 
+                 `PIB per capita (2017)` + 
+                  
+                  ## Políticas 
+                  
+                  NEP +
+                  `Diferença entre Haddad e Bolsonaro` + 
+                  #  `Diferença entre o primeiro e segundo colocado (2016)` +
+                  `% candidato mais votado (2016)` +
+                  
+                  ## Individuais 
+                  
+                  `Prefeita` +
+                  `% despesa do candidato` +
+                  # Governo 
+                #   `Despesas com educação infantil per capita (2020)`+
+                  `Despesas totais com saúde per capita (2020)` +
+                  
+                  # Conjunturais da Pandemia
+                  
+                  `Nº óbitos até outubro/10 mil hab.` +
+                  `Δ% em saúde per capita (2019-2020)` +
+                   `Δ% de médicos (2016-2020)` ,
+                
+                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
+
+
+tab_model(modelo_4.1)
+check_collinearity(modelo_4.1)
+
+ banco_pandemia_reeleicao %>% 
+ select( `Δ% de médicos (2016-2020)`, `Δ% em saúde per capita (2019-2020)`,
+         `Despesas com educação infantil per capita (2020)`,`% despesa do candidato`,  `Despesas totais com saúde per capita (2020)`) %>% 
+  na.omit() %>% 
+   cor
+
+## Tabela com razoes de chance dos cinco modelos 
+
+tab_model(modelo_1, modelo_2,
+          modelo_3, modelo_4,
+          modelo_5, show.ci = FALSE)
 
 ## Salvar para anexo da revista dados
 
@@ -613,7 +670,7 @@ modelo_x <- glm(tentativa_reeleicao ~
                   `Médico(a)` +
                   #   `Casado(a)` +
                   #   `Ensino Superior` +
-                  #    `% despesa por candidato` +
+                  #    `% despesa do candidato` +
                   
                   # Governo
                   
@@ -701,7 +758,7 @@ modelo_6 <- glmer(`Reeleito 2020` ~
                   family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
-#tab_model(modelo_6, p.adjust = "bonferroni")
+tab_model(modelo_6, p.adjust = "bonferroni")
 
 check_model(modelo_6)
 #heck_collinearity(modelo_6)
@@ -779,3 +836,55 @@ check_model(modelo_2)
 check_collinearity(modelo_4)
 
 compare_performance(modelo_1, modelo_2, modelo_3, modelo_4, modelo_5)
+
+
+
+#### Modelo para óbitos em resposta ao parecer n 3 ####
+
+
+
+
+modelo_obitos <- lmer( `Nº óbitos até outubro/10 mil hab.` ~ 
+                    
+                    # Sociodemograficas
+                    
+                    `Log da população (2019)`+
+                  #  Nordeste +
+                   # Sudeste +
+                    #Sul +
+                  #  Norte + 
+                    `PIB per capita (2017)` + 
+                    
+                    ## Políticas 
+                    
+               #     NEP +
+                    `Diferença entre Haddad e Bolsonaro` + 
+                   #  `Diferença entre o primeiro e segundo colocado (2016)` +
+               #     `% candidato mais votado (2016)` +
+                    
+                    ## Individuais 
+                    
+                    `Prefeita` +
+                 #   `% despesa do candidato` +
+                    # Governo 
+                  #  `Despesas com educação infantil per capita (2020)`+
+                    `Despesas totais com saúde per capita (2020)` +
+                    
+                    # Conjunturais da Pandemia
+                    
+                   
+                #    `Δ% em saúde per capita (2019-2020)` +
+                    `Δ% de médicos (2016-2020)` +
+                 `Δ% auxiliar de enfermagem (2016-2020)` +
+                 `Nº casos até outubro/10 mil hab.`+
+                 (1|sigla_uf),
+          
+                  
+                   data = banco_pandemia_reeleicao)
+
+
+tab_model(modelo_obitos)
+
+plot_model(modelo_obitos, type = "pred", 
+           terms = c("Despesas totais com saúde per capita (2020)", "Prefeita"))
+
