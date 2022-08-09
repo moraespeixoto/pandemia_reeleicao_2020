@@ -534,6 +534,7 @@ modelo_5 <- glm(`Reeleito 2020` ~
                   # Governo 
                   
                   `Despesas totais com saúde per capita (2020)` +
+                  `Δ% de médicos (2016-2020)` +
                   
                   # Conjunturais da Pandemia
                   
@@ -546,17 +547,17 @@ tab_model(modelo_5)
 check_collinearity(modelo_5)
 
 
-##
+### Modelo refeito para acatar parecer da Revista Dados
 
 modelo_4.1 <- glm(`Reeleito 2020` ~ 
                   
                   # Sociodemograficas
                   
                   `Log da população (2019)`+
-                  #Nordeste +
-                  #Sudeste +
-                  #Sul +
-                  #Norte + 
+                  Nordeste +
+                  Sudeste +
+                  Sul +
+                  Norte + 
                  `PIB per capita (2017)` + 
                   
                   ## Políticas 
@@ -577,14 +578,30 @@ modelo_4.1 <- glm(`Reeleito 2020` ~
                   # Conjunturais da Pandemia
                   
                   `Nº óbitos até outubro/10 mil hab.` +
-                  `Δ% em saúde per capita (2019-2020)` +
+               #   `Δ% em saúde per capita (2019-2020)` +
                    `Δ% de médicos (2016-2020)` ,
                 
                 family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
-tab_model(modelo_4.1)
+banco_pandemia_reeleicao$pred_modelo_4.1 <- as.factor(
+  ifelse(
+    predict(modelo_4.1, 
+            newdata = banco_pandemia_reeleicao, 
+            type = "response")
+    >0.5,"1","0"))
+
+
+matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4.1, 
+                                           banco_pandemia_reeleicao$`Reeleito 2020`,
+                                           positive = "1")
+
+check_model(modelo_4.1)
 check_collinearity(modelo_4.1)
+
+tab_model(modelo_4.1)
+
+
 
  banco_pandemia_reeleicao %>% 
  select( `Δ% de médicos (2016-2020)`, `Δ% em saúde per capita (2019-2020)`,
@@ -595,8 +612,10 @@ check_collinearity(modelo_4.1)
 ## Tabela com razoes de chance dos cinco modelos 
 
 tab_model(modelo_1, modelo_2,
-          modelo_3, modelo_4,
-          modelo_5, show.ci = FALSE)
+          modelo_3, modelo_4.1,
+          modelo_5, show.ci = FALSE,
+          dv.labels = c("Modelo 1","Modelo 2","Modelo 3","Modelo 4","Modelo 5"))
+
 
 ## Salvar para anexo da revista dados
 
