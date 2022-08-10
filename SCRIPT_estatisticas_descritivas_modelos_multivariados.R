@@ -27,6 +27,16 @@ load("grafico_reeleicao.Rda")
 banco_pandemia_reeleicao <- banco_pandemia_reeleicao %>% 
   rename(`% despesa do candidato` = `% despesa por candidato`)
 
+### Criar a variavel situacao em 2020 do prefeito eleito em 2016
+
+banco_pandemia_reeleicao <- banco_pandemia_reeleicao %>% 
+  mutate(situacao_2020 = case_when(sit_20_sem_suplementar ==  1 ~ "Reeleito",
+                                   sit_20_sem_suplementar ==  2 ~ "Não reeleito",
+                                   sit_20_sem_suplementar ==  3 ~ "Não tentou",
+                                   sit_20_sem_suplementar ==  4 ~ "Impedido"))
+
+
+
 
 ## 1.3 Set theme
 
@@ -78,93 +88,97 @@ ggsave(graf_1,
 ## 2.2 Grafico Relacoes bivariadas entre o enfrentamento e a situacao politica dos prefeitos em 2020
 
 
-a <- banco_pandemia_reeleicao %>% 
+(a <- banco_pandemia_reeleicao %>% 
   filter(`Δ% de médicos (2016-2020)`<= 750) %>% 
-  ggbetweenstats(x = sit_desc_sem_suplementar,
+  ggbetweenstats(x = situacao_2020,
                  y = `Δ% de médicos (2016-2020)`,
                  ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
                  centrality.label.args = list(size = 3.5))+
-  scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-#  MetBrewer::scale_color_met_d(name = "Degas")+
+  scale_x_discrete(limits = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+ MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
+)
 
-
-b <- banco_pandemia_reeleicao %>%
+(b <- banco_pandemia_reeleicao %>%
   filter( `Despesas totais com saúde per capita (2020)` <= 4000) %>% 
   ggbetweenstats(
-    x = sit_desc_sem_suplementar,
+    x = situacao_2020,
     y =   `Despesas totais com saúde per capita (2020)`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
-  scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-#  MetBrewer::scale_color_met_d(name = "Degas")+
+    scale_x_discrete(limits = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
+)
 
-c <- ggbetweenstats(
+(c <- ggbetweenstats(
   data = banco_pandemia_reeleicao,
-  x = sit_desc_sem_suplementar,
+  x = situacao_2020,
   y =  `Nº óbitos até outubro/10 mil hab.`,
   ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
   centrality.label.args = list(size = 3.5)) + 
-  scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-#  MetBrewer::scale_color_met_d(name = "Degas")+
+    scale_x_discrete(limits = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
+)
 
-d <- banco_pandemia_reeleicao %>%
+(d <- banco_pandemia_reeleicao %>%
   ggbetweenstats(
-    x = sit_desc_sem_suplementar,
+    x = situacao_2020,
     y =   `Valor recebido de auxílio per capita`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
-  scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
-  #MetBrewer::scale_color_met_d(name = "Degas")+
+    scale_x_discrete(limits = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
+)
 
-g <-  banco_pandemia_reeleicao %>%
+(g <-  banco_pandemia_reeleicao %>%
   ggbetweenstats(
-    x = sit_desc_sem_suplementar,
+    x = situacao_2020,
     y =    `Média restrição em locais de trabalho`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
-  scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
- # MetBrewer::scale_color_met_d(name = "Degas")+
+    scale_x_discrete(limits = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
+)
 
-h <-  banco_pandemia_reeleicao %>%
+(h <-  banco_pandemia_reeleicao %>%
   filter( `Δ% auxiliar de enfermagem (2016-2020)` <= 500) %>% 
   ggbetweenstats(
-    x = sit_desc_sem_suplementar,
+    x = situacao_2020,
     y =    `Δ% auxiliar de enfermagem (2016-2020)`,
     ggsignif.args = list(textsize = 3.5, tip_length = 0.01),
     centrality.label.args = list(size = 3.5)) + 
-  #MetBrewer::scale_color_met_d(name = "Degas")+
-  scale_x_discrete(labels = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+    scale_x_discrete(limits = c("Impedido", "Não tentou", "Não reeleito", "Reeleito"))+
+  MetBrewer::scale_color_met_d(name = "Degas")+
   labs(x = "", caption = "")+
   theme(axis.text.x = element_text(size = 14), 
         axis.title.y = element_text(size = 14),
         axis.text.y = element_text(size =14),
         plot.subtitle = element_text(size = 14))
-
+)
 ##### Plotar todos juntos - a ordem das letras importa
 
 figura_artigo <- (a + h)/(b + d)/(c + g)
@@ -403,108 +417,145 @@ check_collinearity(modelo_3)
 
 
 
- ########## Modelo 4 ----
+ ########## Modelo 4 ---- ( Modelo refeito para acatar parecer da Revista Dados)
 
-modelo_4 <- glm(`Reeleito 2020` ~ 
+modelo_4.1 <- glm(`Reeleito 2020` ~ 
+                    
+                    # Sociodemograficas
+                    
+                    `Log da população (2019)`+
+                    Nordeste +
+                    Sudeste +
+                    Sul +
+                    Norte + 
+                    `PIB per capita (2017)` + 
+                    
+                    ## Políticas 
+                    
+                    NEP +
+                    `Diferença entre Haddad e Bolsonaro` + 
+                    #  `Diferença entre o primeiro e segundo colocado (2016)` +
+                    `% candidato mais votado (2016)` +
+                    
+                    ## Individuais 
+                    
+                    `Prefeita` +
+                    `% despesa do candidato` +
+                    # Governo 
+                    #   `Despesas com educação infantil per capita (2020)`+
+                    `Despesas totais com saúde per capita (2020)` +
+                    #   `Despesas com educação infantil per capita (2020)` +
+                    
+                    # Conjunturais da Pandemia
+                    
+                    `Nº óbitos até outubro/10 mil hab.` +
+                    # `Δ% em saúde per capita (2019-2020)` +
+                    `Δ% de médicos (2016-2020)` ,
                   
-                  # Sociodemograficas
-                  
-                  `Log da população (2019)`+
-                  Nordeste +
-                  Sudeste +
-                  Sul +
-                  Norte + 
-                  `PIB per capita (2017)` + 
-                  
-                  ## Políticas 
-                  
-                  NEP +
-                  `Diferença entre Haddad e Bolsonaro` + 
-                  #    `Diferença entre o primeiro e segundo colocado (2016)` +
-                  `% candidato mais votado (2016)` +
-                  
-                  ## Individuais 
-                  
-                  PT +  
-                  PP +
-                  PSD +
-                  PR +
-                  DEM +
-                  `Prefeita` +
-                  `% despesa do candidato` +
-                  
-                  # Governo 
-                  
-                  `Despesas totais com saúde per capita (2020)` +
-                  
-                  # Conjunturais da Pandemia
-                  
-                  `Valor recebido de auxílio per capita` +
-                  `Nº óbitos até outubro/10 mil hab.` ,
-                
-                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
-
-tab_model(modelo_4)
+                  family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
-## teste de pressuposto do modelo 4 anexo da dados 
-
-checkmodel_modelo4_dados <- check_model(modelo_4)
-
-banco_pandemia_reeleicao$pred_modelo_4 <- as.factor(
+banco_pandemia_reeleicao$pred_modelo_4.1 <- as.factor(
   ifelse(
-    predict(modelo_4, 
+    predict(modelo_4.1, 
             newdata = banco_pandemia_reeleicao, 
             type = "response")
     >0.5,"1","0"))
 
 
-matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4, 
+matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4.1, 
                                            banco_pandemia_reeleicao$`Reeleito 2020`,
                                            positive = "1")
 
-check_model(modelo_4)
-check_collinearity(modelo_4)
+check_model(modelo_4.1)
+check_collinearity(modelo_4.1)
 
-##### Graficos de probabilidades preditas pelo modelo 4 ----
-plot_1 <-  sjPlot::plot_model(modelo_4, type = "pred", terms = c("NEP", "Prefeita"), 
+tab_model(modelo_4.1)
+
+
+
+## teste de pressuposto do modelo 4 anexo da dados 
+
+checkmodel_modelo4_dados <- check_model(modelo_4.1)
+
+banco_pandemia_reeleicao$pred_modelo_4 <- as.factor(
+  ifelse(
+    predict(modelo_4.1, 
+            newdata = banco_pandemia_reeleicao, 
+            type = "response")
+    >0.5,"1","0"))
+
+
+matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4.1, 
+                                           banco_pandemia_reeleicao$`Reeleito 2020`,
+                                           positive = "1")
+
+check_model(modelo_4.1)
+check_collinearity(modelo_4.1)
+
+##### Graficos de probabilidades preditas pelo modelo 4.1 ----
+
+plot_1 <-  sjPlot::plot_model(modelo_4.1, type = "pred", terms = c("NEP", "Prefeita"), 
                               colors =c("#999999", "#0088cc"))+
   labs(title = "NEP e Prefeita", 
        y = "", 
        col = "", x = "")+
   scale_color_manual(labels = c("Homem", "Mulher"), values = c("grey60", "#994614"))+
-  scale_fill_manual(values = c("gray60", "#994614"))
+  scale_fill_manual(values = c("gray60", "#994614"))+
+  scale_y_continuous(limits = c(0, 1))#
+             
 
-
-plot_2 <- sjPlot::plot_model(modelo_4, type = "pred", terms = c("Log da população (2019)", "Prefeita"), colors =c("#0088cc", "#999999")) +
+plot_2 <- sjPlot::plot_model(modelo_4.1, type = "pred", terms = c("Log da população (2019)", "Prefeita"), colors =c("#0088cc", "#999999")) +
   labs(title = "Log da População e Prefeita",
        y = "",
        col = "", x = "")+
   scale_color_manual(labels = c("Homem", "Mulher"), values = c("grey60", "#994614"))+
-  scale_fill_manual(values = c("gray60", "#994614"))
+  scale_fill_manual(values = c("gray60", "#994614"))+
+  scale_y_continuous(limits = c(0, 1))#
 
 
-plot_3 <- sjPlot::plot_model(modelo_4, type = "pred", terms = c("% despesa do candidato", "Prefeita"), colors =c("#0088cc", "#999999")) +
+plot_3 <- sjPlot::plot_model(modelo_4.1, type = "pred", terms = c("% despesa do candidato", "Prefeita"), colors =c("#0088cc", "#999999")) +
   labs(title = "% Despesa de campanha e Prefeita",
        y = "",
        col = "", x = "")+
   scale_color_manual(labels = c("Homem", "Mulher"), values = c("grey60", "#994614"))+
-  scale_fill_manual(values = c("gray60", "#994614"))
+  scale_fill_manual(values = c("gray60", "#994614"))+
+  scale_y_continuous(limits = c(0, 1))#
 
 
-plot_4 <- sjPlot::plot_model(modelo_4, type = "pred", terms = c("Despesas totais com saúde per capita (2020)", "Prefeita"), colors =c("#0088cc", "#999999")) +
+plot_4 <- sjPlot::plot_model(modelo_4.1, type = "pred", terms = c("Despesas totais com saúde per capita (2020)", "Prefeita"), colors =c("#0088cc", "#999999")) +
   labs(title = "Gastos em Saúde e Prefeita",
        y = "",
        col = "", x = "")+
   scale_color_manual(labels = c("Homem", "Mulher"), values = c("grey60", "#994614"))+
-  scale_fill_manual(values = c("gray60", "#994614"))
+  scale_fill_manual(values = c("gray60", "#994614"))+
+  scale_y_continuous(limits = c(0, 1))#
+
+
+plot_5 <- sjPlot::plot_model(modelo_4.1, type = "pred", terms = c("Δ% de médicos (2016-2020)", "Prefeita"), colors =c("#0088cc", "#999999")) +
+  labs(title = "Contratação de médicos e Prefeita",
+       y = "",
+       col = "", x = "")+
+  scale_color_manual(labels = c("Homem", "Mulher"), values = c("grey60", "#994614"))+
+  scale_fill_manual(values = c("gray60", "#994614"))+
+  scale_y_continuous(limits = c(0, 1))#
+
+
+plot_6 <- sjPlot::plot_model(modelo_4.1, type = "pred", terms = c("Diferença entre Haddad e Bolsonaro", "Prefeita"), colors =c("#0088cc", "#999999")) +
+  labs(title = "Diferença entre Haddad e Bolsonaro e Prefeita",
+       y = "",
+       col = "", x = "")+
+  scale_color_manual(labels = c("Homem", "Mulher"), values = c("grey60", "#994614"))+
+  scale_fill_manual(values = c("gray60", "#994614"))+
+  scale_y_continuous(limits = c(0, 1))#
 
 library(patchwork)
 
-prob_preditas_artio_dados <- (plot_1 + plot_2)/(plot_3 + plot_4 )
+prob_preditas_artio_dados <- (plot_1 + plot_2)/(plot_3 + plot_6 )/(plot_5 + plot_4)
 
 ggsave(prob_preditas_artio_dados, width = 17, height = 18, 
        filename = "prob_preditas_artigo_dados.png")
+
 
 ########## Modelo  5 ----
 
@@ -536,6 +587,7 @@ modelo_5 <- glm(`Reeleito 2020` ~
                   `Despesas totais com saúde per capita (2020)` +
                   `Δ% de médicos (2016-2020)` +
                   
+                  
                   # Conjunturais da Pandemia
                   
                   `Nº óbitos até outubro/10 mil hab.` ,
@@ -547,67 +599,6 @@ tab_model(modelo_5)
 check_collinearity(modelo_5)
 
 
-### Modelo refeito para acatar parecer da Revista Dados
-
-modelo_4.1 <- glm(`Reeleito 2020` ~ 
-                  
-                  # Sociodemograficas
-                  
-                  `Log da população (2019)`+
-                  Nordeste +
-                  Sudeste +
-                  Sul +
-                  Norte + 
-                 `PIB per capita (2017)` + 
-                  
-                  ## Políticas 
-                  
-                  NEP +
-                  `Diferença entre Haddad e Bolsonaro` + 
-                  #  `Diferença entre o primeiro e segundo colocado (2016)` +
-                  `% candidato mais votado (2016)` +
-                  
-                  ## Individuais 
-                  
-                  `Prefeita` +
-                  `% despesa do candidato` +
-                  # Governo 
-                #   `Despesas com educação infantil per capita (2020)`+
-                  `Despesas totais com saúde per capita (2020)` +
-                  
-                  # Conjunturais da Pandemia
-                  
-                  `Nº óbitos até outubro/10 mil hab.` +
-               #   `Δ% em saúde per capita (2019-2020)` +
-                   `Δ% de médicos (2016-2020)` ,
-                
-                family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
-
-
-banco_pandemia_reeleicao$pred_modelo_4.1 <- as.factor(
-  ifelse(
-    predict(modelo_4.1, 
-            newdata = banco_pandemia_reeleicao, 
-            type = "response")
-    >0.5,"1","0"))
-
-
-matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4.1, 
-                                           banco_pandemia_reeleicao$`Reeleito 2020`,
-                                           positive = "1")
-
-check_model(modelo_4.1)
-check_collinearity(modelo_4.1)
-
-tab_model(modelo_4.1)
-
-
-
- banco_pandemia_reeleicao %>% 
- select( `Δ% de médicos (2016-2020)`, `Δ% em saúde per capita (2019-2020)`,
-         `Despesas com educação infantil per capita (2020)`,`% despesa do candidato`,  `Despesas totais com saúde per capita (2020)`) %>% 
-  na.omit() %>% 
-   cor
 
 ## Tabela com razoes de chance dos cinco modelos 
 
@@ -783,6 +774,11 @@ check_model(modelo_6)
 #heck_collinearity(modelo_6)
 
 plot_model(modelo_6, show.values = TRUE)
+
+
+
+
+
 
 ####### Modelo 7 ----
 modelo_7 <- glmer(`Reeleito 2020` ~ 
