@@ -417,7 +417,8 @@ check_collinearity(modelo_3)
 
 
 
- ########## Modelo 4 ---- ( Modelo refeito para acatar parecer da Revista Dados)
+#### Modelo 4 ( Modelo refeito para acatar parecer da Revista Dados) ####
+
 
 modelo_4.1 <- glm(`Reeleito 2020` ~ 
                     
@@ -757,18 +758,19 @@ modelo_6 <- glmer(`Reeleito 2020` ~
                     # Governo 
                     
                     `Despesas totais com saúde per capita (2020)` +
-                    
+                    `Δ% de médicos (2016-2020)`+
+                    `Nº óbitos até outubro/10 mil hab.` +
                     (1|sigla_uf), 
                   
                   
                   # Conjunturais da Pandemia
                   
-                  # `Nº óbitos até outubro/10 mil hab.` ,
+                  
                   
                   family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
 
 
-tab_model(modelo_6, p.adjust = "bonferroni")
+tab_model(modelo_6)
 
 check_model(modelo_6)
 #heck_collinearity(modelo_6)
@@ -802,19 +804,19 @@ modelo_7 <- glmer(`Reeleito 2020` ~
                     ## Individuais 
                     
                     `Prefeita` +
-                    
+                    `% despesa do candidato`+
                     # Governo 
                     
                     `Despesas totais com saúde per capita (2020)` +
-                    
+                    `Δ% de médicos (2016-2020)`+
                     
                     
                     
                     # Conjunturais da Pandemia
                     
-                    `Nº óbitos até outubro/10 mil hab.` 
+                    `Nº óbitos até outubro/10 mil hab.` +
                   
-                  +
+
                     (1|sigla_uf),
                   
                   family = binomial(link = "logit"), data = banco_pandemia_reeleicao)
@@ -822,9 +824,11 @@ modelo_7 <- glmer(`Reeleito 2020` ~
 
 ## Os dois modelos hierarquicos que foram para o anexo do artigo por não trazerem ganhos substantivos
 
-tab_model(modelo_6, modelo_7)
+tab_model(modelo_6, modelo_7,
+          dv.labels = c("Modelo 6", "Modelo 7"))
 
-plot_models(modelo_6, modelo_7, show.values = TRUE) 
+plot_models(modelo_6, modelo_7, show.values = TRUE)
+  
 
 
 
