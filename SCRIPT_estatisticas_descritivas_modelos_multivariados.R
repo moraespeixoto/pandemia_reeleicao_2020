@@ -479,6 +479,15 @@ tab_model(modelo_4.1)
 
 checkmodel_modelo4_dados <- check_model(modelo_4.1)
 
+## Para plotar os graficos acima separadamente 
+performance::plot(check_normality(modelo_4.1))
+performance::plot(posterior_predictive_check(modelo_4.1))
+performance::plot(binned_residuals(modelo_4.1))
+performance::plot(check_collinearity(modelo_4.1))
+performance::plot(binned_residuals(modelo_4.1))
+
+
+
 banco_pandemia_reeleicao$pred_modelo_4 <- as.factor(
   ifelse(
     predict(modelo_4.1, 
