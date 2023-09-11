@@ -480,12 +480,47 @@ tab_model(modelo_4.1)
 checkmodel_modelo4_dados <- check_model(modelo_4.1)
 
 ## Para plotar os graficos acima separadamente 
-performance::plot(check_normality(modelo_4.1))
-performance::plot(posterior_predictive_check(modelo_4.1))
-performance::plot(binned_residuals(modelo_4.1))
-performance::plot(check_collinearity(modelo_4.1))
-performance::plot(binned_residuals(modelo_4.1))
 
+## Collinearity
+
+colli <- check_collinearity(modelo_4.1)
+
+colli <- plot(colli)+
+  coord_flip()
+
+ggsave(colli, width = 15, height = 8, filename = "~/pandemia_reeleicao_2020/plots/collinearity.png")
+
+## Normality
+
+norm <- check_normality(modelo_4.1)
+
+norm <- plot(norm)
+
+ggsave(norm, width = 15, height = 8, filename = "~/pandemia_reeleicao_2020/plots/normality.png")
+
+## Posterior Precdictive 
+
+precd <- posterior_predictive_check(modelo_4.1, type = "density") 
+
+precd <- plot(precd)
+
+ggsave(precd, width = 15, height = 8, filename = "~/pandemia_reeleicao_2020/plots/posterior_precdictive.png")
+
+## Binned Residuals
+
+binned <- binned_residuals(modelo_4.1)
+
+binned <- plot(binned)
+
+ggsave(binned, width = 15, height = 8, filename = "~/pandemia_reeleicao_2020/plots/binned_residuals.png")
+
+## Influential Observations
+
+influ <- check_outliers(modelo_4.1)
+
+influ <- plot(influ)
+
+ggsave(influ, width = 15, height = 8, filename = "~/pandemia_reeleicao_2020/plots/influ_obs.png")
 
 
 banco_pandemia_reeleicao$pred_modelo_4 <- as.factor(
@@ -499,9 +534,6 @@ banco_pandemia_reeleicao$pred_modelo_4 <- as.factor(
 matriz_modelo_4 <- caret:: confusionMatrix(banco_pandemia_reeleicao$pred_modelo_4.1, 
                                            banco_pandemia_reeleicao$`Reeleito 2020`,
                                            positive = "1")
-
-check_model(modelo_4.1)
-check_collinearity(modelo_4.1)
 
 ##### Graficos de probabilidades preditas pelo modelo 4.1 ----
 
